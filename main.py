@@ -50,7 +50,7 @@ async def getHHMMSSFormat(totalseconds: int) -> str:
     duration = dt.timedelta(seconds=totalseconds)
     timePeriod = (datetime.min + duration).time()
     return timePeriod.isoformat(timespec="seconds")
-SERVERS = []
+SERVERS = [941803156633956362]
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} on file {__file__}")
@@ -63,7 +63,7 @@ async def on_ready():
 @discord.option(name="duration_in_time", description="the duration option but the number", required=True)
 @discord.option(name="channel", description="the channel where the giveaway will start", required=True, type=discord.TextChannel)
 async def start_giveaway(ctx: discord.ApplicationContext, name: str, winners: str, duration: str, what_to_win: str, channel: discord.TextChannel) -> None:
-    ALLOWED_ROLES = []
+    ALLOWED_ROLES = [945370507476344863]
     for role in ctx.author.roles:
         if role.id in ALLOWED_ROLES:
             break
@@ -138,8 +138,8 @@ d - days
 
                         emb = discord.Embed(title=":tadaa: Giveaway Ended :tadaa:", description=f"winners:\n".join(all_w), colour=discord.Color.green(), timestamp=datetime.now())
                         emb.add_field(name="Prize", value=f"*{what_to_win}*", inline=True)
-                        emb.add_field(name="Hosted by", value=f"<@{ctx.author}>", inline=True)
-                        await message.edit(embed=emb)
+                        emb.add_field(name="Hosted by", value=f"<@{ctx.author.id}>", inline=True)
+                        await message.edit(embed=emb, view=None)
                         return
         else:
             await ctx.respond("5 winners are allowed not **{}**".format(winners), ephemeral=True)
