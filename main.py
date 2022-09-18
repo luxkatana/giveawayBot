@@ -50,7 +50,7 @@ async def getHHMMSSFormat(totalseconds: int) -> str:
     duration = dt.timedelta(seconds=totalseconds)
     timePeriod = (datetime.min + duration).time()
     return timePeriod.isoformat(timespec="seconds")
-SERVERS = [941803156633956362]
+SERVERS = []
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} on file {__file__}")
@@ -63,7 +63,7 @@ async def on_ready():
 @discord.option(name="duration_in_time", description="the duration option but the number", required=True)
 @discord.option(name="channel", description="the channel where the giveaway will start", required=True, type=discord.TextChannel)
 async def start_giveaway(ctx: discord.ApplicationContext, name: str, winners: str, duration: str, what_to_win: str, channel: discord.TextChannel) -> None:
-    ALLOWED_ROLES = [945370507476344863]
+    ALLOWED_ROLES = []
     for role in ctx.author.roles:
         if role.id in ALLOWED_ROLES:
             break
