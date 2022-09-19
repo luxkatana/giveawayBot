@@ -2,7 +2,7 @@ import discord
 import random
 from discord.ext import commands
 import asyncio
-from time import time
+import time
 import datetime as dt
 from datetime import datetime
 from  views import *
@@ -63,14 +63,6 @@ async def on_ready():
 @discord.option(name="duration_in_time", description="the duration option but the number", required=True)
 @discord.option(name="channel", description="the channel where the giveaway will start", required=True, type=discord.TextChannel)
 async def start_giveaway(ctx: discord.ApplicationContext, name: str, winners: str, duration: str, what_to_win: str, channel: discord.TextChannel) -> None:
-    ALLOWED_ROLES = []
-    for role in ctx.author.roles:
-        if role.id in ALLOWED_ROLES:
-            break
-    else:
-        ssh = discord.Embed(title="Failed", description="You dont have any allowed role(s) for this command", colour=discord.Color.red())
-        await ctx.respond(embed=ssh)
-        return
 
     if winners.isnumeric():
         casted = int(winners)
@@ -94,14 +86,15 @@ d - days
                 case _:
                     formatted_time = await getHHMMSSFormat(duration_seconds)
                     embed = discord.Embed(title=name, colour=discord.Color.green())
-                    ends_at_t = time() + int(duration_seconds)
+
+                    format_emb = "hosted by <@{author_id}>\namount of winners: *{winners_count}*\nParticipants joined: **{members}**"
+                    ends_at_t = time.time() + int(duration_seconds)
                     hours, minutes, seconds = formatted_time.split(":")
                     embed.add_field(name="duration", value=f"{hours} hours {minutes} minutes and {seconds} seconds",inline=False)
-                    embed.add_field(name="hosted by ", value=f"<@{ctx.author.id}>", inline=True)
-                    embed.add_field(name="amount of winners", value=f"*{winners}*")
-                    embed.add_field(name="participants joined", value="0")
+                    embed.add_field(name="info", value=format_emb.format(author_id=ctx.author.id, winners_count=winners, members=0), inline=False)
+
                     try:
-                        v = giveaway_view(duration_seconds, embed)
+                        v = giveaway_view(duration_seconds, embed, format_emb, ctx, winners)
                         message = await channel.send(embed=embed, view=v)
                         
                     except:
@@ -117,10 +110,8 @@ d - days
                             hours, minutes, seconds = conv.split(":")
                             new_generated_shit = discord.Embed(title=name, colour=discord.Color.green())
                             new_generated_shit.add_field(name="duration", value=f"{hours} hour(s) {minutes} minute(s) and {seconds} second(s)", inline=False)
-                            new_generated_shit.add_field(name="hosted by ", value=f"<@{ctx.author.id}>", inline=True)
-                            new_generated_shit.add_field(name="amount of winners", value=f"*{winners}*")
-                            new_generated_shit.add_field(name="participants joined",
-                                                         value=len(v.joined))
+                            new_generated_shit.add_field(name="info", value=format_emb.format(author_id=ctx.author.id, winners_count=winners, members=len(v.joined)), inline=False)
+
                             await message.edit(embed=new_generated_shit)
                         await asyncio.sleep(1)
                     all_joined = v.joined
