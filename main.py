@@ -85,12 +85,16 @@ d - days
                     return
                 case _:
                     formatted_time = await getHHMMSSFormat(duration_seconds)
-                    embed = discord.Embed(title=name, colour=discord.Color.green())
+
 
                     format_emb = "hosted by <@{author_id}>\namount of winners: *{winners_count}*\nParticipants joined: **{members}**"
-                    ends_at_t = time.time() + int(duration_seconds)
+
+                    ends_at_t = int(time.time()) + int(duration_seconds)
+                    embed = discord.Embed(title=name, colour=discord.Color.green(),
+                                          timestamp=datetime.fromtimestamp(ends_at_t))
                     hours, minutes, seconds = formatted_time.split(":")
-                    embed.add_field(name="duration", value=f"{hours} hours {minutes} minutes and {seconds} seconds",inline=False)
+                    formatted_shit = discord.utils.format_dt(datetime.fromtimestamp(ends_at_t), style="R")
+                    embed.add_field(name="duration", value=formatted_shit, inline=False)
                     embed.add_field(name="info", value=format_emb.format(author_id=ctx.author.id, winners_count=winners, members=0), inline=False)
 
                     try:
@@ -101,19 +105,7 @@ d - days
                         await ctx.respond("Couldnt send in {}".format(channel), ephemeral=True)
                         return
                     await ctx.respond(f"created: {message.jump_url}", ephemeral=True)
-                    editable = duration_seconds
-
-                    while editable > 0:
-                        editable -= 1
-                        if editable % 10 == 0:
-                            conv = await getHHMMSSFormat(editable)
-                            hours, minutes, seconds = conv.split(":")
-                            new_generated_shit = discord.Embed(title=name, colour=discord.Color.green())
-                            new_generated_shit.add_field(name="duration", value=f"{hours} hour(s) {minutes} minute(s) and {seconds} second(s)", inline=False)
-                            new_generated_shit.add_field(name="info", value=format_emb.format(author_id=ctx.author.id, winners_count=winners, members=len(v.joined)), inline=False)
-
-                            await message.edit(embed=new_generated_shit)
-                        await asyncio.sleep(1)
+                    await asyncio.sleep(duration_seconds)
                     all_joined = v.joined
                     if len(all_joined) <= int(winners):
                         await message.edit(embed=discord.Embed(title="Giveaway Failed", description="Not enough people to win", colour=discord.Color.red()), view=None)
@@ -136,4 +128,8 @@ d - days
             await ctx.respond("5 winners are allowed not **{}**".format(winners), ephemeral=True)
     else:
         await ctx.respond("``winners`` must be a number", ephemeral=True)
-bot.run(TOKEN)
+
+try:
+    bot.run(TOKEN)
+except discord.errors.LoginFailure:
+    print("Invalid token passed D:")
