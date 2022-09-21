@@ -33,7 +33,7 @@ class giveaway_view(View):
         if interaction.user.id in self.joined:
             del self.joined[self.joined.index(interaction.user.id)]
             to_d = self.embed.to_dict()
-            to_d["fields"][1]["value"] = self.format_emb.format(author_id=ctx.author.id, winners_count=self.winners_count, members=len(self.joined))
+            to_d["fields"][1]["value"] = self.format_emb.format(author_id=self.ctx.author.id, winners_count=self.winners_count, members=len(self.joined))
             self.embed = discord.Embed.from_dict(to_d)
             await interaction.response.send_message("You left the giveaway", ephemeral=True)
             await interaction.message.edit(embed=self.embed)
